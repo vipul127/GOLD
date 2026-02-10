@@ -118,23 +118,23 @@ export default function Home() {
             </div>
 
             {/* Right Side - Video/Visual */}
-            <div className="w-1/2 h-full flex items-center justify-start pl-32 pr-20">
+            <div className="w-1/2 h-full flex items-center justify-center pr-10">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="relative w-full aspect-square max-w-[500px]"
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="relative w-full aspect-[4/3] max-w-[650px]"
               >
                 {/* Liquid Gold Video Block */}
-                <div className="w-full h-full rounded-3xl overflow-hidden">
+                <div className="w-full h-full overflow-hidden mix-blend-multiply">
                   <video
                     autoPlay
-                    muted
                     loop
+                    muted
                     playsInline
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain scale-110"
                   >
-                    <source src="https://res.cloudinary.com/dft3midee/video/upload/v1770295524/vid_ceu7ut.mov" />
+                    <source src="https://res.cloudinary.com/dft3midee/video/upload/v1770449608/bgrem_onvgmf.mp4" />
                   </video>
                 </div>
               </motion.div>
@@ -301,14 +301,14 @@ export default function Home() {
         <GoldScroller />
 
         {/* About Event Section */}
-        <section className="snap-section bg-offwhite">
+        <section className="snap-section bg-black">
           <div className="w-full px-20 mt-20">
             <div className="flex justify-between items-end mb-14">
               <div>
 
-                <h2 className="text-8xl font-black uppercase tracking-tighter leading-none font-antonio">THE EVENT</h2>
+                <h2 className="text-8xl font-black uppercase tracking-tighter leading-none font-antonio text-offwhite">THE EVENT</h2>
               </div>
-              <p className="text-black/40 font-bold uppercase tracking-widest text-xs max-w-[200px] leading-relaxed">
+              <p className="text-offwhite/40 font-bold uppercase tracking-widest text-xs max-w-[200px] leading-relaxed">
                 Join the most exclusive gathering of technology enthusiasts in the country.
               </p>
             </div>
@@ -318,55 +318,103 @@ export default function Home() {
                 <div className="aspect-[4/3] bg-zinc-100 mb-10 overflow-hidden rounded-3xl relative">
                   <div className="absolute inset-0 bg-gold-fresh/5 group-hover:bg-transparent transition-all duration-700" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10rem] font-black text-black/5 select-none font-antonio">01</span>
+                    <span className="text-[10rem] font-black text-offwhite/10 select-none font-antonio">01</span>
                   </div>
                 </div>
-                <h3 className="text-4xl font-black mb-6 uppercase tracking-tight">Collaborate</h3>
-                <p className="text-black/60 text-xl leading-relaxed font-medium max-w-md">Meet members from various ACM chapters and share ideas that matter in a high-stakes environment.</p>
+                <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Collaborate</h3>
+                <p className="text-offwhite/60 text-xl leading-relaxed font-medium max-w-md">Meet members from various ACM chapters and share ideas that matter in a high-stakes environment.</p>
               </div>
 
               <div className="group cursor-pointer mt-20">
                 <div className="aspect-[4/3] bg-zinc-100 mb-10 overflow-hidden rounded-3xl relative">
                   <div className="absolute inset-0 bg-gold-fresh/5 group-hover:bg-transparent transition-all duration-700" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10rem] font-black text-black/5 select-none font-antonio">02</span>
+                    <span className="text-[10rem] font-black text-offwhite/10 select-none font-antonio">02</span>
                   </div>
                 </div>
-                <h3 className="text-4xl font-black mb-6 uppercase tracking-tight">Celebrate</h3>
-                <p className="text-black/60 text-xl leading-relaxed font-medium max-w-md">Join exclusive activities designed to foster community and celebrate the achievements of our chapters.</p>
+                <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Celebrate</h3>
+                <p className="text-offwhite/60 text-xl leading-relaxed font-medium max-w-md">Join exclusive activities designed to foster community and celebrate the achievements of our chapters.</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Faculty Section */}
-        <section className="snap-section bg-offwhite text-black relative">
-          <div className="absolute top-0 left-0 p-20 z-10 w-full">
-            <div className="space-y-4">
-              <h2 className="text-7xl font-black leading-none tracking-tighter text-black uppercase font-antonio">
-                Dr. Sharad P. Jadhav
-              </h2>
-              <p className="text-xl font-black text-black/40 uppercase tracking-[0.3em]">
+        <section className="snap-section bg-offwhite text-black relative" style={{ overflow: 'visible' }}>
+          <div className="absolute top-0 left-0 p-10 z-10 w-full">
+            <div className="space-y-6">
+              <motion.h2
+                className="text-4xl font-black leading-[1.3] tracking-tight text-black uppercase font-antonio pb-4"
+                style={{ fontSize: '9rem', overflow: 'visible' }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.03,
+                    },
+                  },
+                }}
+              >
+                {"Dr. Sharad P. Jadhav".split("").map((char, index) => (
+                  <motion.span
+                    key={index}
+                    className="inline-block mb-6"
+                    style={{ overflow: 'hidden', display: char === " " ? "inline" : "inline-block" }}
+                    variants={{
+                      hidden: {
+                        opacity: 0,
+                        y: 50,
+                        clipPath: "inset(0 100% 0 0)",
+                      },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        clipPath: "inset(0 0% 0 0)",
+                        transition: {
+                          duration: 0.5,
+                          ease: [0.22, 1, 0.36, 1],
+                        },
+                      },
+                    }}
+                  >
+                    {char === " " ? "\u00A0" : char}
+                  </motion.span>
+                ))}
+              </motion.h2>
+              <p className="text-3xl -mt-15 font-black text-black/40 uppercase tracking-[0.3em]">
                 Faculty Coordinator
               </p>
             </div>
           </div>
-
-          <div className="absolute bottom-0 right-0 w-[40%] h-[85%] pointer-events-none">
-            <div className="relative w-full h-full grayscale contrast-125 brightness-90">
+          {/* https://res.cloudinary.com/dft3midee/image/upload/v1770708847/res2_obr6lz.png */}
+          {/* https://res.cloudinary.com/dft3midee/image/upload/v1770708861/base_nzzyjm.png colored*/}
+          <div className="absolute -bottom-20 -right-10 w-[55%] h-[85%] pointer-events-none">
+            <div className="relative w-full h-full">
               <Image
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=1000"
+                src="https://res.cloudinary.com/dft3midee/image/upload/v1770708847/res2_obr6lz.png"
                 alt="Faculty Coordinator"
                 fill
-                className="object-contain object-bottom"
+                className="object-contain object-bottom object-right"
+                style={{
+                  filter: 'contrast(1.05) brightness(0.98)',
+                }}
+              />
+              {/* Grain overlay */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-[0.45] mix-blend-overlay"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'repeat',
+                }}
               />
             </div>
           </div>
         </section>
 
         {/* Core Team Section */}
-        {/* Core Team Section */}
-        <section className="snap-section relative min-h-screen bg-offwhite flex flex-col items-center justify-between pb-24 overflow-hidden">
+        <section className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-between pb-24 overflow-hidden">
           {/* Lanyards at Top (Hanging) */}
           <div className="w-full h-[60vh] absolute top-0 left-0 z-10 pointer-events-auto">
             <Lanyard position={[0, 0, 15]} gravity={[0, -40, 0]} />
@@ -383,7 +431,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="relative z-20 text-left space-y-4 -mb-20 mr-5 self-end"
           >
-            <h2 className="text-8xl font-black tracking-tighter uppercase font-antonio text-black leading-none text-right">
+            <h2 className="text-8xl font-black tracking-tighter uppercase font-antonio text-offwhite leading-none text-right">
               THE TEAM
             </h2>
           </motion.div>
