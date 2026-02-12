@@ -54,7 +54,7 @@ const CARD_TEXTURES = [
 ];
 
 const CARD_COUNT = 10;
-const CARD_SPACING = 0.9;
+const CARD_SPACING = 0.87;
 
 export default function Lanyard({
     position = [0, 0, 40],

@@ -459,7 +459,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="relative z-20 text-left space-y-4 top-[85vh] self-start ml-4"
+                className="relative z-20 text-left space-y-4 top-[85%] self-start ml-[-4%] rotate-[-90deg]"
               >
                 <h2 className="text-8xl font-black tracking-tighter uppercase font-antonio text-offwhite leading-none text-left">
                   THE TEAM
@@ -470,7 +470,7 @@ export default function Home() {
               <div className="flex-grow" />
 
               {/* Lanyards at Bottom (Hanging) */}
-              <div className="w-full h-[100vh] absolute bottom-[8%] left-[0%] z-10 pointer-events-auto flex justify-center items-end">
+              <div className="w-full h-[100vh] absolute bottom-[8%] z-10 pointer-events-auto flex justify-center items-end">
                 <Lanyard position={[0, 0, 15]} gravity={[0, -40, 0]} transparent={true} />
               </div>
             </section>
