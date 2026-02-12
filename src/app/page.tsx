@@ -17,6 +17,7 @@ import DarkVeil from "@/components/DarkVeil";
 import Lanyard from "@/components/Lanyard";
 import MobileExperience from "@/components/MobileExperience";
 import StickerPeel from "@/components/StickerPeel";
+import Sponsors from "@/components/sections/Sponsors";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,6 +28,7 @@ const SECTIONS = [
   { id: "about-event", title: "ABOUT EVENT", theme: "offwhite" },
   { id: "faculty", title: "FACULTY", theme: "offwhite" },
   { id: "team", title: "TEAM", theme: "offwhite" },
+  { id: "sponsors", title: "SPONSORS", theme: "black" },
   { id: "chapters", title: "CHAPTERS", theme: "offwhite" },
 ];
 
@@ -429,7 +431,7 @@ export default function Home() {
               <div className="absolute -bottom-20 -right-10 w-[55%] h-[85%] pointer-events-none">
                 <div className="relative w-full h-full">
                   <Image
-                    src="https://res.cloudinary.com/dft3midee/image/upload/v1770708847/res2_obr6lz.png"
+                    src="https://res.cloudinary.com/dft3midee/image/upload/v1770708861/base_nzzyjm.png"
                     alt="Faculty Coordinator"
                     fill
                     className="object-contain object-bottom object-right"
@@ -479,7 +481,8 @@ export default function Home() {
               </div>
             </section>
 
-
+            {/* Sponsors Section */}
+            <Sponsors />
 
             {/* Chapters Section */}
             <section className="snap-section bg-offwhite min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-20">
@@ -538,8 +541,8 @@ export default function Home() {
 
             {/* Registration Section */}
             <section className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
-              {/* Video Background - Plays once and stays on last frame */}
-              <video
+              {/* Video Background - Plays once, then fades down */}
+              <motion.video
                 ref={(el) => {
                   if (!el) return;
 
@@ -557,7 +560,7 @@ export default function Home() {
 
                   observer.observe(el);
 
-                  // Mark as played when video ends (don't fade video)
+                  // Mark as played when video ends
                   el.addEventListener('ended', () => {
                     setRegistrationVideoPlayed(true);
                   });
@@ -565,67 +568,89 @@ export default function Home() {
                   return () => observer.disconnect();
                 }}
                 className="absolute inset-0 w-full h-full object-cover"
-                src="https://res.cloudinary.com/dft3midee/video/upload/v1770748357/1080_rb9m8x.mp4"
+                src="https://res.cloudinary.com/dft3midee/video/upload/v1770889781/1080_rb9m8x.mp4"
                 playsInline
                 muted
+                initial={{ opacity: 1 }}
+                animate={{ opacity: registrationVideoPlayed ? 0.3 : 1 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
               />
 
-              {/* Centered Content - Only appears AFTER video ends */}
+              {/* Content - Only appears AFTER video ends */}
               {registrationVideoPlayed && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                  className="relative z-10 flex flex-col items-center justify-center gap-12"
-                >
-                  {/* Huge REGISTER Typography */}
-                  <h1 className="text-[15vw] font-black uppercase tracking-tighter font-antonio text-white leading-none">
-                    REGISTER
-                  </h1>
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 w-full h-full">
 
-                  {/* Minimal Glass Button */}
+                  {/* Top Event Details - Slide Down */}
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                  >
-                    <GlassSurface
-                      width={220}
-                      height={85}
-                      borderRadius={16}
-                      displace={0.2}
-                      distortionScale={0.1}
-                      brightness={1.3}
-                      opacity={0.9}
-                    >
-                      <button className="w-full h-full flex items-center justify-center text-lg font-bold uppercase tracking-wider text-white hover:text-gold-fresh transition-colors duration-300 group">
-                        Join Now
-                        <motion.span
-                          className="ml-2 inline-block"
-                          initial={{ x: 0 }}
-                          whileHover={{ x: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          →
-                        </motion.span>
-                      </button>
-                    </GlassSurface>
-                  </motion.div>
-
-                  {/* Bottom Event Details */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.6 }}
-                    className="absolute bottom-16 left-0 right-0 flex justify-center gap-8 text-gold-fresh/60 text-sm font-medium tracking-widest uppercase"
+                    transition={{
+                      duration: 0.8,
+                      delay: 0,
+                      ease: [0.22, 1, 0.36, 1]
+                    }}
+                    className="absolute top-24 left-0 right-0 flex justify-center gap-8 text-gold-fresh/80 text-sm font-medium tracking-[0.3em] uppercase z-20"
                   >
                     <span>GOLD 2026</span>
                     <span>•</span>
-                    <span>Mumbai, India</span>
+                    <span>Navi Mumbai, India</span>
                     <span>•</span>
                     <span>RAIT ACM</span>
                   </motion.div>
-                </motion.div>
+
+                  {/* Main Content - Dramatic Reveal */}
+                  <div className="flex flex-col items-center justify-center gap-16 z-20">
+                    {/* Huge REGISTER Typography - Scale + Fade with Spring */}
+                    <motion.h1
+                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{
+                        duration: 1,
+                        delay: 0.3,
+                        ease: [0.16, 1, 0.3, 1],
+                        opacity: { duration: 0.8, delay: 0.3 }
+                      }}
+                      className="text-[15vw] font-black uppercase tracking-tighter font-antonio text-white leading-none drop-shadow-2xl"
+                    >
+                      REGISTER
+                    </motion.h1>
+
+                    {/* Glass Button - Smooth Rise */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.8,
+                        ease: [0.16, 1, 0.3, 1]
+                      }}
+                    >
+                      <GlassSurface
+                        width={280}
+                        height={85}
+                        borderRadius={999}
+                        displace={0.1}
+                        distortionScale={0.5}
+                        brightness={1.2}
+                        opacity={1}
+                        blur={0}
+                        className="bg-gold"
+                      >
+                        <button className="w-full h-full flex items-center justify-center gap-4 text-gold-medium font-bold tracking-[0.2em] uppercase text-lg hover:text-gold-light hover:scale-105 transition-all duration-300 group px-8">
+                          Join Now
+                          <motion.span
+                            className="inline-block text-2xl"
+                            initial={{ x: 0 }}
+                            whileHover={{ x: 5 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                          >
+                            →
+                          </motion.span>
+                        </button>
+                      </GlassSurface>
+                    </motion.div>
+                  </div>
+                </div>
               )}
             </section>
 
@@ -649,7 +674,7 @@ export default function Home() {
 
               <div className="w-full px-20 py-12 border-b border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.5em] text-white/20 relative z-10">
                 <span>© 2026 RAIT ACM. ALL RIGHTS RESERVED.</span>
-                <span>DESIGNED BY RAIT ACM</span>
+                <span>DESIGNED BY TECHNICAL CHIEF AT RAIT ACM</span>
               </div>
 
               <div className="flex-1 w-full px-20 flex items-start justify-between relative z-10 pt-12 pointer-events-none">

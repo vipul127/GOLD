@@ -58,16 +58,16 @@ export default function Lanyard({
 
     // Array of textures for each card (expand this as needed)
     const cardTextures = [
-        '/cores/1.png',
-        '/cores/6.png',
-        '/cores/2.png',
-        '/cores/7.png',
-        '/cores/3.png',
-        '/cores/8.png',
-        '/cores/4.png',
-        '/cores/9.png',
-        '/cores/5.png',
-        '/cores/10.png'
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887799/1_hjzda4.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770890700/6_xwvzvq.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887803/2_v9g43f.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887799/7_dbqdbn.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887799/3_fyil1l.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887799/8_wowpsw.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887798/4_vyfywu.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887800/9_l8eljg.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887798/5_f6nnxs.png',
+        'https://res.cloudinary.com/dft3midee/image/upload/v1770887802/10_c861hx.png'
     ];
 
     return (
