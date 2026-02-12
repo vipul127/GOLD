@@ -459,9 +459,9 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="relative z-20 text-left space-y-4 top-[80vh] ml-5 self-start"
+                className="relative z-20 text-left space-y-4 top-[85vh] self-start ml-4"
               >
-                <h2 className="text-9xl font-black tracking-tighter uppercase font-antonio text-offwhite leading-none text-left">
+                <h2 className="text-8xl font-black tracking-tighter uppercase font-antonio text-offwhite leading-none text-left">
                   THE TEAM
                 </h2>
               </motion.div>
@@ -470,14 +470,8 @@ export default function Home() {
               <div className="flex-grow" />
 
               {/* Lanyards at Bottom (Hanging) */}
-              <div className="w-full h-[100vh] absolute bottom-0 left-[7%] z-10 pointer-events-auto">
-                {Array.from({ length: 10 }).map((_, index) => {
-                  const xPos = 0 + (index * 20); // Wider spacing: -40, -31, -22, -13, -4, 5, 14, 23, 32, 41
-                  const yPos = index % 2 === 0 ? 0 : 3; // Alternating: first down (0), then up (3)
-                  return (
-                    <Lanyard key={index} position={[xPos, yPos, 15]} gravity={[0, -30, 0]} />
-                  );
-                })}
+              <div className="w-full h-[100vh] absolute bottom-[8%] left-[0%] z-10 pointer-events-auto flex justify-center items-end">
+                <Lanyard position={[0, 0, 15]} gravity={[0, -40, 0]} transparent={true} />
               </div>
             </section>
 

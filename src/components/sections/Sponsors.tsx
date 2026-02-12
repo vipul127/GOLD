@@ -29,7 +29,7 @@ export default function Sponsors() {
                     viewport={{ once: true }}
                     className="text-offwhite/40 text-2xl font-medium tracking-wide text-center"
                 >
-                    Preparing Soon
+                    Revealing Soon
                 </motion.p>
             </div>
         </section>
