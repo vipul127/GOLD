@@ -21,8 +21,16 @@ extend({ MeshLineGeometry, MeshLineMaterial });
 
 // --- CONFIGURATION ---
 // Adjust these values to change the ribbon lengths manually
-const SHORT_BAND_START_Y = 6.25; // Increased length for top cards
-const LONG_BAND_START_Y = 7.2;   // Decreased length for bottom cards
+const SHORT_BAND_START_Y = 6; // Increased length for top cards
+const LONG_BAND_START_Y = 6.8;   // Decreased length for bottom cards
+
+// --- DECAL CONFIGURATION ---
+// Scale: [x (negative for horizontal flip), y, z]
+const DECAL_SCALE: [number, number, number] = [-0.716, 1.13, 0.15];
+// Position: [x, y, z] - Adjust y to move image up/down, z to project on back face
+const DECAL_POSITION: [number, number, number] = [0, 0.55, 0.08];
+// Rotation: [x, y, z] - Rotate to project on back face
+const DECAL_ROTATION: [number, number, number] = [0, Math.PI, 0];
 
 interface LanyardProps {
     position?: [number, number, number];
@@ -32,10 +40,10 @@ interface LanyardProps {
 }
 
 export default function Lanyard({
-    position = [0, 0, 30],
+    position = [0, 0, 10],
     gravity = [0, -40, 0],
     fov = 20,
-    transparent = true
+    transparent = false
 }: LanyardProps) {
     const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
@@ -46,20 +54,20 @@ export default function Lanyard({
     }, []);
 
     const count = 10;
-    const spacing = 0.8;
+    const spacing = 0.85;
 
     // Array of textures for each card (expand this as needed)
     const cardTextures = [
-        '/liban.png',
-        '', // Add more image paths here
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        ''
+        '/cores/1.png',
+        '/cores/6.png',
+        '/cores/2.png',
+        '/cores/7.png',
+        '/cores/3.png',
+        '/cores/8.png',
+        '/cores/4.png',
+        '/cores/9.png',
+        '/cores/5.png',
+        '/cores/10.png'
     ];
 
     return (
@@ -216,14 +224,14 @@ function ShortBand({ isMobile = false, x = 0, z = 0, rotation = 0, textureUrl }:
 
             <RigidBody position={[x, startY - 2.5, z]} rotation={[0, rotation, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
                 <CuboidCollider args={[0.6, 0.9, 0.01]} />
-                <group scale={1.8} position={[0, -1.2, -0.05]} rotation={[0, Math.PI, 0]}
+                <group scale={1.8} position={[0, -1.2, -0.05]} rotation={[0, 0, 0]}
                     onPointerOver={() => hover(true)} onPointerOut={() => hover(false)}
                     onPointerUp={(e: any) => { e.target.releasePointerCapture(e.pointerId); drag(false); }}
                     onPointerDown={(e: any) => { e.target.setPointerCapture(e.pointerId); drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation()))); }}>
                     <mesh geometry={nodes.card.geometry}>
                         <meshPhysicalMaterial map={materials.base.map} map-anisotropy={16} clearcoat={1} roughness={0.9} metalness={0.8} />
                         {textureUrl && (
-                            <Decal position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.9} map={userTexture} />
+                            <Decal position={DECAL_POSITION} rotation={DECAL_ROTATION} scale={DECAL_SCALE} map={userTexture} />
                         )}
                     </mesh>
                     <mesh geometry={nodes.clip.geometry} material={materials.metal} />
@@ -319,14 +327,14 @@ function LongBand({ isMobile = false, x = 0, z = 0, rotation = 0, textureUrl }: 
 
             <RigidBody position={[x, startY - 4.5, z]} rotation={[0, rotation, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
                 <CuboidCollider args={[0.6, 0.9, 0.01]} />
-                <group scale={1.8} position={[0, -1.2, -0.05]} rotation={[0, Math.PI, 0]}
+                <group scale={1.8} position={[0, -1.2, -0.05]} rotation={[0, 0, 0]}
                     onPointerOver={() => hover(true)} onPointerOut={() => hover(false)}
                     onPointerUp={(e: any) => { e.target.releasePointerCapture(e.pointerId); drag(false); }}
                     onPointerDown={(e: any) => { e.target.setPointerCapture(e.pointerId); drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation()))); }}>
                     <mesh geometry={nodes.card.geometry}>
                         <meshPhysicalMaterial map={materials.base.map} map-anisotropy={16} clearcoat={1} roughness={0.9} metalness={0.8} />
                         {textureUrl && (
-                            <Decal position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.9} map={userTexture} />
+                            <Decal position={DECAL_POSITION} rotation={DECAL_ROTATION} scale={DECAL_SCALE} map={userTexture} />
                         )}
                     </mesh>
                     <mesh geometry={nodes.clip.geometry} material={materials.metal} />

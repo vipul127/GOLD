@@ -40,6 +40,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false); // Start as false to avoid hydration errors
   const [viewportChecked, setViewportChecked] = useState(false);
+  const [registrationVideoPlayed, setRegistrationVideoPlayed] = useState(false);
 
   // Detect viewport size
   useEffect(() => {
@@ -456,9 +457,9 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="relative z-20 text-left space-y-4 mt-20 ml-5 self-start"
+                className="relative z-20 text-left space-y-4 top-[80vh] ml-5 self-start"
               >
-                <h2 className="text-8xl font-black tracking-tighter uppercase font-antonio text-offwhite leading-none text-left">
+                <h2 className="text-9xl font-black tracking-tighter uppercase font-antonio text-offwhite leading-none text-left">
                   THE TEAM
                 </h2>
               </motion.div>
@@ -467,9 +468,9 @@ export default function Home() {
               <div className="flex-grow" />
 
               {/* Lanyards at Bottom (Hanging) */}
-              <div className="w-full h-[100vh] absolute bottom-0 -left-[10%] z-10 pointer-events-auto">
+              <div className="w-full h-[100vh] absolute bottom-0 left-[7%] z-10 pointer-events-auto">
                 {Array.from({ length: 10 }).map((_, index) => {
-                  const xPos = -5 + (index * 9); // Wider spacing: -40, -31, -22, -13, -4, 5, 14, 23, 32, 41
+                  const xPos = 0 + (index * 20); // Wider spacing: -40, -31, -22, -13, -4, 5, 14, 23, 32, 41
                   const yPos = index % 2 === 0 ? 0 : 3; // Alternating: first down (0), then up (3)
                   return (
                     <Lanyard key={index} position={[xPos, yPos, 15]} gravity={[0, -30, 0]} />
@@ -531,6 +532,101 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+            </section>
+
+
+
+            {/* Registration Section */}
+            <section className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
+              {/* Video Background - Plays once and stays on last frame */}
+              <video
+                ref={(el) => {
+                  if (!el) return;
+
+                  // Intersection Observer to play video when in viewport
+                  const observer = new IntersectionObserver(
+                    (entries) => {
+                      entries.forEach((entry) => {
+                        if (entry.isIntersecting && el.paused && !registrationVideoPlayed) {
+                          el.play().catch(err => console.log('Video play failed:', err));
+                        }
+                      });
+                    },
+                    { threshold: 0.5 }
+                  );
+
+                  observer.observe(el);
+
+                  // Mark as played when video ends (don't fade video)
+                  el.addEventListener('ended', () => {
+                    setRegistrationVideoPlayed(true);
+                  });
+
+                  return () => observer.disconnect();
+                }}
+                className="absolute inset-0 w-full h-full object-cover"
+                src="https://res.cloudinary.com/dft3midee/video/upload/v1770748357/1080_rb9m8x.mp4"
+                playsInline
+                muted
+              />
+
+              {/* Centered Content - Only appears AFTER video ends */}
+              {registrationVideoPlayed && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="relative z-10 flex flex-col items-center justify-center gap-12"
+                >
+                  {/* Huge REGISTER Typography */}
+                  <h1 className="text-[15vw] font-black uppercase tracking-tighter font-antonio text-white leading-none">
+                    REGISTER
+                  </h1>
+
+                  {/* Minimal Glass Button */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                  >
+                    <GlassSurface
+                      width={220}
+                      height={85}
+                      borderRadius={16}
+                      displace={0.2}
+                      distortionScale={0.1}
+                      brightness={1.3}
+                      opacity={0.9}
+                    >
+                      <button className="w-full h-full flex items-center justify-center text-lg font-bold uppercase tracking-wider text-white hover:text-gold-fresh transition-colors duration-300 group">
+                        Join Now
+                        <motion.span
+                          className="ml-2 inline-block"
+                          initial={{ x: 0 }}
+                          whileHover={{ x: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          →
+                        </motion.span>
+                      </button>
+                    </GlassSurface>
+                  </motion.div>
+
+                  {/* Bottom Event Details */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="absolute bottom-16 left-0 right-0 flex justify-center gap-8 text-gold-fresh/60 text-sm font-medium tracking-widest uppercase"
+                  >
+                    <span>GOLD 2026</span>
+                    <span>•</span>
+                    <span>Mumbai, India</span>
+                    <span>•</span>
+                    <span>RAIT ACM</span>
+                  </motion.div>
+                </motion.div>
+              )}
             </section>
 
 
