@@ -59,7 +59,7 @@ const CARD_SPACING = 0.87;
 export default function Lanyard({
     position = [0, 0, 40],
     gravity = [0, -40, 0],
-    fov = 20,
+    fov = 21,
     transparent = false
 }: LanyardProps) {
     const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth < 768);
@@ -429,3 +429,4 @@ function LongBand({ isMobile = false, x = 0, z = 0, rotation = 0, userTexture }:
         </>
     );
 }
+useTexture.preload(CARD_TEXTURES);

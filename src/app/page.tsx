@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, useInView } from "framer-motion";
 import { ArrowUp, Search, Instagram, Linkedin, Twitter, Mail } from "lucide-react";
 import Image from "next/image";
 import GlassSurface from "@/components/GlassSurface";
@@ -18,14 +18,17 @@ import Lanyard from "@/components/Lanyard";
 import MobileExperience from "@/components/MobileExperience";
 import StickerPeel from "@/components/StickerPeel";
 import Sponsors from "@/components/sections/Sponsors";
+import PrizePool from "@/components/sections/PrizePool";
+import Timeline from "@/components/sections/Timeline";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SECTIONS = [
   { id: "home", title: "GOLD", theme: "offwhite" },
   { id: "about-us", title: "ABOUT US", theme: "black" },
-  { id: "sequence", title: "SEQUENCE", theme: "offwhite" },
   { id: "about-event", title: "ABOUT EVENT", theme: "offwhite" },
+  { id: "prize-pool", title: "PRIZE POOL", theme: "black" },
+  { id: "timeline", title: "TIMELINE", theme: "offwhite" },
   { id: "faculty", title: "FACULTY", theme: "offwhite" },
   { id: "team", title: "TEAM", theme: "offwhite" },
   { id: "sponsors", title: "SPONSORS", theme: "black" },
@@ -33,6 +36,105 @@ const SECTIONS = [
 ];
 
 
+
+function LazyFooter() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { margin: "200px 0px" });
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section ref={ref} className="snap-section bg-black text-offwhite min-h-[60vh] flex flex-col relative overflow-hidden">
+      {isInView && (
+        <>
+          {/* Ambient Glow & Aurora */}
+          <div className="absolute inset-0 pointer-events-none rotate-180">
+            <DarkVeil
+              hueShift={-155}
+              noiseIntensity={0}
+              scanlineIntensity={0.9}
+              speed={0.5}
+              scanlineFrequency={22}
+              warpAmount={0.05}
+              resolutionScale={1}
+            />
+          </div>
+
+          <div className="w-full px-20 py-12 border-b border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.5em] text-white/20 relative z-10">
+            <span>© 2026 RAIT ACM. ALL RIGHTS RESERVED.</span>
+            <span>DESIGNED BY TECHNICAL CHIEF AT RAIT ACM</span>
+          </div>
+
+          <div className="flex-1 w-full px-20 flex items-start justify-between relative z-10 pt-12 pointer-events-none">
+            <div className="space-y-16">
+              <VideoText
+                text="GOLD"
+                videoSrc="https://res.cloudinary.com/dft3midee/video/upload/v1770295524/vid_ceu7ut.mov"
+                className="text-[15rem] leading-[0.8]"
+              />
+
+              <div className="flex gap-20 pointer-events-auto">
+                <div>
+                  <p className="text-xs font-black text-gold-fresh uppercase tracking-[0.6em] mb-6 opacity-60">Contact</p>
+                  <p className="text-3xl font-bold tracking-tight text-white select-text">hello@acmgold.in</p>
+                </div>
+                <div>
+                  <p className="text-xs font-black text-gold-fresh uppercase tracking-[0.6em] mb-6 opacity-60">Location</p>
+                  <p className="text-3xl font-bold tracking-tight text-white">Mumbai, India</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end space-y-24 pointer-events-auto">
+              <nav className="flex flex-col items-end space-y-6">
+                {SECTIONS.filter(s => s.id !== "home").map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => scrollToSection(s.id)}
+                    className="text-5xl font-black uppercase tracking-tighter text-white/40 hover:text-gold-fresh transition-all duration-300 font-antonio hover:scale-110 origin-right"
+                  >
+                    {s.title}
+                  </button>
+                ))}
+              </nav>
+
+              <div className="flex gap-8 relative z-20">
+                <Linkedin className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                <Instagram className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                <Twitter className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                <Mail className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function LazyLanyard() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { margin: "200px 0px" });
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreen = () => setIsSmallScreen(window.innerWidth < 1500);
+    checkScreen();
+    window.addEventListener('resize', checkScreen);
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
+
+  return (
+    <div ref={ref} className="w-full h-[100vh] absolute bottom-[5vh] z-10 pointer-events-auto flex justify-center items-end">
+      {isInView && <Lanyard position={[0, 0, isSmallScreen ? 19 : 15]} gravity={[0, -40, 0]} transparent={true} />}
+    </div>
+  );
+}
 
 export default function Home() {
   // Use state ref to ensure we react when the DOM node is actually mounted
@@ -120,7 +222,7 @@ export default function Home() {
             className="snap-container h-screen w-full"
           >
             {/* Hero Section */}
-            <section className="snap-section bg-offwhite overflow-hidden relative">
+            <section id="home" className="snap-section bg-offwhite overflow-hidden relative">
               {/* RAIT ACM PRESENTS - Top Center */}
               <div className="absolute top-8 left-0 right-0 z-20 flex flex-col items-center gap-4">
                 <span className="text-[10px] font-bold tracking-[1em] uppercase text-gold-dark/40">RAIT ACM PRESENTS</span>
@@ -178,207 +280,165 @@ export default function Home() {
                   </motion.div>
                 </div>
               </div>
-            </section>
 
-            {/* About Us Section */}
-            <section className="snap-section bg-black text-offwhite relative overflow-hidden">
-              {/* Animated Circuit Background */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {/* Radial glow */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,223,0,0.08),transparent_60%)]" />
 
-                {/* Animated grid lines */}
-                <svg className="absolute inset-0 w-full h-full opacity-10">
-                  <defs>
-                    <pattern id="circuit-grid" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-                      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#FFDF00" strokeWidth="0.5" />
-                    </pattern>
-                  </defs>
-                  <rect width="100%" height="100%" fill="url(#circuit-grid)" />
-                </svg>
-
-                {/* Floating tech nodes */}
-                <motion.div
-                  animate={{ y: [-20, 20, -20], opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-[20%] left-[15%] w-3 h-3 bg-gold-fresh rounded-full blur-[1px]"
-                />
-                <motion.div
-                  animate={{ y: [15, -15, 15], opacity: [0.2, 0.5, 0.2] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="absolute top-[35%] left-[25%] w-2 h-2 bg-gold-fresh rounded-full blur-[1px]"
-                />
-                <motion.div
-                  animate={{ y: [-10, 25, -10], opacity: [0.4, 0.7, 0.4] }}
-                  transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                  className="absolute top-[60%] left-[10%] w-2 h-2 bg-gold-fresh rounded-full blur-[1px]"
-                />
-
-                {/* Animated connection lines */}
-                <svg className="absolute top-0 left-0 w-[50%] h-full opacity-20">
-                  <motion.line
-                    x1="15%" y1="20%" x2="25%" y2="35%"
-                    stroke="#FFDF00"
-                    strokeWidth="1"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                  />
-                  <motion.line
-                    x1="25%" y1="35%" x2="10%" y2="60%"
-                    stroke="#FFDF00"
-                    strokeWidth="1"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 0.5 }}
-                  />
-                </svg>
-              </div>
-
-              {/* Main Content */}
-              <div className="w-full h-full px-20 pt-20 relative z-10 flex flex-col items-start justify-start">
-                {/* Label */}
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  viewport={{ once: true }}
-                  className="flex items-center gap-6 mb-8"
-                >
-                  <div className="h-[1px] w-24 bg-gold-fresh" />
-                  <span className="text-xs font-black tracking-[0.5em] text-gold-fresh uppercase">The Vision</span>
-                </motion.div>
-
-                {/* Title with stagger animation */}
-                <motion.h2
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-                  viewport={{ once: true }}
-                  className="text-7xl font-black uppercase tracking-tighter leading-none font-antonio mb-10"
-                >
-                  ABOUT US
-                </motion.h2>
-
-                {/* Description with word animation */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                  viewport={{ once: true }}
-                  className="max-w-xl"
-                >
-                  <p className="text-xl leading-relaxed font-medium opacity-80">
-                    A collaborative ecosystem of ACM chapters across India,
-                    bringing together the brightest minds to{" "}
-                    <motion.span
-                      className="text-gold-fresh inline-block"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: 0.6 }}
-                      viewport={{ once: true }}
-                    >
-                      innovate
-                    </motion.span>,{" "}
-                    <motion.span
-                      className="text-gold-fresh inline-block"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: 0.8 }}
-                      viewport={{ once: true }}
-                    >
-                      collaborate
-                    </motion.span>, and shape the future of technology.
-                  </p>
-                </motion.div>
-
-                {/* Stats / Key Numbers */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-                  viewport={{ once: true }}
-                  className="flex gap-16 mt-16"
-                >
-                  <div>
-                    <span className="text-5xl font-black text-gold-fresh font-antonio">15+</span>
-                    <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mt-2">Chapters</p>
-                  </div>
-                  <div>
-                    <span className="text-5xl font-black text-gold-fresh font-antonio">500+</span>
-                    <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mt-2">Members</p>
-                  </div>
-                  <div>
-                    <span className="text-5xl font-black text-gold-fresh font-antonio">50+</span>
-                    <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mt-2">Events</p>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Collaboration Image - Bottom Right */}
+              {/* Bottom Meaning Text */}
               <motion.div
-                initial={{ opacity: 0, x: 100 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                viewport={{ once: true }}
-                className="absolute h-[70%] w-auto pointer-events-none"
-                style={{ bottom: "-3rem", right: "-3rem" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2, duration: 1 }}
+                className="absolute bottom-12 w-full text-center pointer-events-none z-20"
               >
-                <Image
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/c7baa1e1-bb04-49ff-9324-942e8f32837c/goldabout-1770278609224.png?width=8000&height=8000&resize=contain"
-                  alt="Collaboration"
-                  width={800}
-                  height={800}
-                  className="h-full w-auto object-contain object-bottom"
-                  priority
-                />
+                <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-gold-dark/60 animate-pulse">
+                  GATHERING OF OUTSTANDING LEADERS IN VARIOUS DOMAINS
+                </p>
               </motion.div>
             </section>
 
+            {/* About Us Section */}
+            {/* About Us Section - Typography Focus */}
+            {/* About Us Section - Diagonal Layout */}
+            <section id="about-us" className="snap-section bg-black text-white relative overflow-hidden h-screen w-full">
+
+              {/* Radial Gradient for Image Depth */}
+              <div className="absolute bottom-0 right-0 w-[60vw] h-[60vw] bg-gold-fresh/5 blur-[120px] rounded-full pointer-events-none" />
+
+              {/* Top-Left Content Container */}
+              <div className="absolute top-0 left-0 w-full md:w-[60%] h-full p-8 md:p-20 flex flex-col justify-start z-20 pointer-events-none">
+                <div className="pointer-events-auto">
+                  {/* Massive Header */}
+                  <div className="relative mb-8">
+                    <motion.h2
+                      initial={{ opacity: 0, x: -50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      className="text-[12vw] md:text-[9vw] font-black font-antonio leading-[0.85] tracking-tighter text-white z-10 relative"
+                    >
+                      ABOUT US
+                    </motion.h2>
+                    <motion.h2
+                      className="text-[12vw] md:text-[9vw] font-black font-antonio leading-[0.85] tracking-tighter text-transparent stroke-white stroke-1 absolute top-4 left-4 -z-10 opacity-20"
+                      style={{ WebkitTextStroke: "1px rgba(255,255,255,0.3)" }}
+                    >
+                      ABOUT US
+                    </motion.h2>
+                  </div>
+
+                  {/* Content */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="max-w-xl mb-12"
+                  >
+                    <div className="h-[2px] w-20 bg-gold-fresh mb-8" />
+                    <p className="text-lg md:text-2xl font-light leading-relaxed text-white/80">
+                      A collaborative ecosystem of ACM chapters across India,
+                      uniting the brightest minds to <span className="text-gold-fresh font-bold">innovate</span>,
+                      <span className="text-gold-fresh font-bold"> collaborate</span>, and shape the future.
+                    </p>
+                  </motion.div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10 max-w-lg">
+                    {[
+                      { value: "15+", label: "Chapters" },
+                      { value: "500+", label: "Members" },
+                      { value: "50+", label: "Events" }
+                    ].map((stat, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.4 + (i * 0.1) }}
+                      >
+                        <h4 className="text-4xl md:text-5xl font-black font-antonio text-gold-fresh">{stat.value}</h4>
+                        <p className="text-xs font-bold uppercase tracking-widest text-white/40 mt-1">{stat.label}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom-Right Image Container */}
+              <motion.div
+                initial={{ opacity: 0, x: 100, scale: 0.9 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute bottom-0 right-0 w-[90%] md:w-[60%] h-[60%] md:h-[90%] z-10 flex items-end justify-end pointer-events-none"
+              >
+                <Image
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/project-uploads/c7baa1e1-bb04-49ff-9324-942e8f32837c/goldabout-1770278609224.png?width=8000&height=8000&resize=contain"
+                  alt="About Gold"
+                  fill
+                  className="object-contain object-bottom md:object-right-bottom drop-shadow-2xl"
+                  priority
+                />
+              </motion.div>
+
+            </section>
+
             {/* SEQUENCE Section - GoldScroller Component */}
-            <GoldScroller />
+            <GoldScroller id="sequence" />
 
             {/* About Event Section */}
-            <section className="snap-section bg-black">
+            <section id="about-event" className="snap-section bg-black">
               <div className="w-full px-20 mt-20">
                 <div className="flex justify-between items-end mb-14">
                   <div>
-
                     <h2 className="text-8xl font-black uppercase tracking-tighter leading-none font-antonio text-offwhite">THE EVENT</h2>
                   </div>
-                  <p className="text-offwhite/40 font-bold uppercase tracking-widest text-xs max-w-[200px] leading-relaxed">
-                    Join the most exclusive gathering of technology enthusiasts in the country.
+                  <p className="text-offwhite/40 font-bold uppercase tracking-widest text-xs max-w-[300px] leading-relaxed">
+                    GOLD 2026 is a pioneering initiative fostering collaboration among ACM India chapters to inspire and empower attendees!
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-20">
                   <div className="group cursor-pointer">
-                    <div className="aspect-[4/3] bg-zinc-100 mb-10 overflow-hidden rounded-3xl relative">
+                    <div className="aspect-[4/3] bg-zinc-900 mb-10 overflow-hidden rounded-3xl relative">
                       <div className="absolute inset-0 bg-gold-fresh/5 group-hover:bg-transparent transition-all duration-700" />
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[10rem] font-black text-offwhite/10 select-none font-antonio">01</span>
+                        <span className="text-[10rem] font-black text-offwhite/5 select-none font-antonio">01</span>
+                      </div>
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <p className="text-white/60 text-sm font-medium leading-relaxed">
+                          30-minute talks, sharing insights across fields. Aim to inspire attendees and foster collaboration among ACM India chapters.
+                        </p>
                       </div>
                     </div>
-                    <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Collaborate</h3>
-                    <p className="text-offwhite/60 text-xl leading-relaxed font-medium max-w-md">Meet members from various ACM chapters and share ideas that matter in a high-stakes environment.</p>
+                    <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Speaker Session</h3>
                   </div>
 
                   <div className="group cursor-pointer mt-20">
-                    <div className="aspect-[4/3] bg-zinc-100 mb-10 overflow-hidden rounded-3xl relative">
+                    <div className="aspect-[4/3] bg-zinc-900 mb-10 overflow-hidden rounded-3xl relative">
                       <div className="absolute inset-0 bg-gold-fresh/5 group-hover:bg-transparent transition-all duration-700" />
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[10rem] font-black text-offwhite/10 select-none font-antonio">02</span>
+                        <span className="text-[10rem] font-black text-offwhite/5 select-none font-antonio">02</span>
+                      </div>
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <p className="text-white/60 text-sm font-medium leading-relaxed">
+                          Rebuild a website's frontend using HTML, CSS, and JS without viewing its source code. analyze the design to implement the underlying code.
+                        </p>
                       </div>
                     </div>
-                    <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Celebrate</h3>
-                    <p className="text-offwhite/60 text-xl leading-relaxed font-medium max-w-md">Join exclusive activities designed to foster community and celebrate the achievements of our chapters.</p>
+                    <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Reverse Coding</h3>
                   </div>
                 </div>
               </div>
             </section>
+            {/* Timeline Section */}
+            <Timeline />
+            {/* Prize Pool Section */}
+            <PrizePool />
+
+
 
             {/* Faculty Section */}
-            <section className="snap-section bg-offwhite text-black relative" style={{ overflow: 'visible' }}>
+            <section id="faculty" className="snap-section bg-offwhite text-black relative" style={{ overflow: 'visible' }}>
               <div className="absolute top-0 left-0 p-10 z-10 w-full">
                 <div className="space-y-6">
                   <motion.h2
@@ -452,7 +512,7 @@ export default function Home() {
             </section>
 
             {/* Core Team Section */}
-            <section className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-between pb-24 overflow-hidden">
+            <section id="team" className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-between pb-24 overflow-hidden">
               {/* Title/Team at Top Left */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -470,16 +530,14 @@ export default function Home() {
               <div className="flex-grow" />
 
               {/* Lanyards at Bottom (Hanging) */}
-              <div className="w-full h-[100vh] absolute bottom-[8%] z-10 pointer-events-auto flex justify-center items-end">
-                <Lanyard position={[0, 0, 15]} gravity={[0, -40, 0]} transparent={true} />
-              </div>
+              <LazyLanyard />
             </section>
 
             {/* Sponsors Section */}
-            <Sponsors />
+            <Sponsors id="sponsors" />
 
             {/* Chapters Section */}
-            <section className="snap-section bg-offwhite min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-20">
+            <section id="chapters" className="snap-section bg-offwhite min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-20">
               {/* Title */}
               <motion.h2
                 className="text-[10rem] font-black uppercase tracking-tighter text-center mb-20 font-antonio text-black"
@@ -592,7 +650,7 @@ export default function Home() {
                     <span>RAIT ACM</span>
                   </motion.div>
 
-                  {/* Main Content - Dramatic Reveal */}
+                  {/* Huge REGISTER Typography - Scale + Fade with Spring */}
                   <div className="flex flex-col items-center justify-center gap-16 z-20">
                     {/* Huge REGISTER Typography - Scale + Fade with Spring */}
                     <motion.h1
@@ -650,79 +708,14 @@ export default function Home() {
 
 
 
+
+
             {/* Footer Section */}
-            <section className="snap-section bg-black text-offwhite min-h-[60vh] flex flex-col relative overflow-hidden">
-              {/* Ambient Glow */}
-              {/* Ambient Glow & Aurora */}
-              <div className="absolute inset-0 pointer-events-none rotate-180">
-                <DarkVeil
-                  hueShift={-155}
-                  noiseIntensity={0}
-                  scanlineIntensity={0.9}
-                  speed={0.5}
-                  scanlineFrequency={22}
-                  warpAmount={0.05}
-                  resolutionScale={1}
-                />
-              </div>
-
-              <div className="w-full px-20 py-12 border-b border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.5em] text-white/20 relative z-10">
-                <span>© 2026 RAIT ACM. ALL RIGHTS RESERVED.</span>
-                <span>DESIGNED BY TECHNICAL CHIEF AT RAIT ACM</span>
-              </div>
-
-              <div className="flex-1 w-full px-20 flex items-start justify-between relative z-10 pt-12 pointer-events-none">
-                <div className="space-y-16">
-                  <VideoText
-                    text="GOLD"
-                    videoSrc="https://res.cloudinary.com/dft3midee/video/upload/v1770295524/vid_ceu7ut.mov"
-                    className="text-[15rem] leading-[0.8]"
-                  />
-
-                  <div className="flex gap-20 pointer-events-auto">
-                    <div>
-                      <p className="text-xs font-black text-gold-fresh uppercase tracking-[0.6em] mb-6 opacity-60">Contact</p>
-                      <p className="text-3xl font-bold tracking-tight text-white select-text">hello@acmgold.in</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-gold-fresh uppercase tracking-[0.6em] mb-6 opacity-60">Location</p>
-                      <p className="text-3xl font-bold tracking-tight text-white">Mumbai, India</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-end space-y-24 pointer-events-auto">
-                  <nav className="flex flex-col items-end space-y-6">
-                    {["Home", "About", "Event", "Chapters", "Team"].map((item) => (
-                      <button
-                        key={item}
-                        className="text-5xl font-black uppercase tracking-tighter text-white/40 hover:text-gold-fresh transition-all duration-300 font-antonio hover:scale-110 origin-right"
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </nav>
-
-                  <div className="flex gap-8 relative z-20">
-                    <Linkedin className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                    <Instagram className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                    <Twitter className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                    <Mail className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* <div className="w-full px-20 py-12 border-t border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.5em] text-white/20 relative z-10">
-            <span>© 2026 RAIT ACM. ALL RIGHTS RESERVED.</span>
-            <span>DESIGNED BY RAIT ACM</span>
-          </div> */}
-            </section>
-          </div>
+            <LazyFooter />
+          </div >
 
           {/* Navbar / Arrow */}
-          <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150]">
+          < div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150]" >
             <AnimatePresence mode="wait">
               {!showArrow ? (
                 <motion.div
@@ -793,9 +786,10 @@ export default function Home() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </div >
         </>
-      )}
-    </main>
+      )
+      }
+    </main >
   );
 }

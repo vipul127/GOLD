@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 
-export default function Sponsors() {
+export default function Sponsors({ id }: { id?: string }) {
     return (
-        <section className="snap-section bg-black text-offwhite relative overflow-hidden">
+        <section id={id} className="snap-section bg-black text-offwhite relative overflow-hidden">
             {/* Pure black background */}
 
             {/* Main Content - Centered text */}
