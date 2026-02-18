@@ -16,7 +16,7 @@ import VideoText from "@/components/ui/VideoText";
 import DarkVeil from "@/components/DarkVeil";
 import Lanyard from "@/components/Lanyard";
 import MobileExperience from "@/components/MobileExperience";
-import StickerPeel from "@/components/StickerPeel";
+
 import Sponsors from "@/components/sections/Sponsors";
 import PrizePool from "@/components/sections/PrizePool";
 import Timeline from "@/components/sections/Timeline";
@@ -242,7 +242,7 @@ export default function Home() {
                     <VideoText
                       text="GOLD"
                       videoSrc="https://res.cloudinary.com/dft3midee/video/upload/v1770295524/vid_ceu7ut.mov"
-                      className="text-[18vw] h-[18vw] -mr-20"
+                      className="text-[18vw] h-[18vw]"
                     />
 
                     <div className="space-y-6 flex flex-col items-end">
@@ -287,7 +287,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2, duration: 1 }}
-                className="absolute bottom-12 w-full text-center pointer-events-none z-20"
+                className="absolute bottom-4 w-full text-center pointer-events-none z-20"
               >
                 <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-gold-dark/60 animate-pulse">
                   GATHERING OF OUTSTANDING LEADERS IN VARIOUS DOMAINS
@@ -318,8 +318,8 @@ export default function Home() {
                       ABOUT US
                     </motion.h2>
                     <motion.h2
-                      className="text-[12vw] md:text-[9vw] font-black font-antonio leading-[0.85] tracking-tighter text-transparent stroke-white stroke-1 absolute top-4 left-4 -z-10 opacity-20"
-                      style={{ WebkitTextStroke: "1px rgba(255,255,255,0.3)" }}
+                      className="text-[12vw] md:text-[9vw] font-black font-antonio leading-[0.85] tracking-tighter text-transparent stroke-white stroke-2 absolute top-0 left-0 translate-x-2 -translate-y-2 -z-10 select-none pointer-events-none"
+                      style={{ WebkitTextStroke: "1px white" }}
                     >
                       ABOUT US
                     </motion.h2>
@@ -437,13 +437,13 @@ export default function Home() {
 
 
 
-            {/* Faculty Section */}
-            <section id="faculty" className="snap-section bg-offwhite text-black relative" style={{ overflow: 'visible' }}>
+
+            <section id="faculty" className="snap-section bg-offwhite text-black relative flex flex-col justify-start pt-32 overflow-hidden">
               <div className="absolute top-0 left-0 p-10 z-10 w-full">
                 <div className="space-y-6">
                   <motion.h2
                     className="text-4xl font-black leading-[1.3] tracking-tight text-black uppercase font-antonio pb-4"
-                    style={{ fontSize: '9rem', overflow: 'visible' }}
+                    style={{ fontSize: '9rem' }}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
@@ -538,54 +538,53 @@ export default function Home() {
 
             {/* Chapters Section */}
             <section id="chapters" className="snap-section bg-offwhite min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-20">
-              {/* Title */}
-              <motion.h2
-                className="text-[10rem] font-black uppercase tracking-tighter text-center mb-20 font-antonio text-black"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-              >
-                Our Chapters
-              </motion.h2>
+              <div className="container mx-auto px-4 z-10">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="text-[10vw] md:text-[7vw] font-black font-antonio text-black text-center leading-none mb-12 select-none"
+                >
+                  OUR CHAPTERS
+                </motion.h2>
 
-              {/* Stickers Grid */}
-              <div className="w-full mx-auto px-10 relative" style={{ height: '700px' }}>
-                {[
-                  { src: '/chapter/logo.png', x: 10, y: -15, rotate: -8, peelDirection: 0 },
-                  { src: '/chapter/kjsce.png', x: 90, y: 20, rotate: 5, peelDirection: 45 },
-                  { src: '/chapter/acmw.png', x: 35, y: 5, rotate: -3, peelDirection: 90 },
-                  { src: '/chapter/bvpacm.png', x: 50, y: 50, rotate: 7, peelDirection: 135 },
-                  { src: '/chapter/amc-pccoe-logo.png', x: 75, y: 40, rotate: -5, peelDirection: 180 },
-                  { src: '/chapter/sndt.png', x: 15, y: 65, rotate: 4, peelDirection: 225 },
-                  { src: '/chapter/1.png', x: 85, y: 70, rotate: -6, peelDirection: 270 },
-                  { src: '/chapter/2.png', x: 30, y: 80, rotate: 8, peelDirection: 315 },
-                  { src: '/chapter/mpstme.svg', x: 60, y: 25, rotate: -2, peelDirection: 30 },
-                ].map((sticker, index) => (
-                  <div
-                    key={index}
-                    className="absolute"
-                    style={{
-                      left: `${sticker.x}%`,
-                      top: `${sticker.y}%`,
-                      transform: 'translate(-50%, -50%)',
-                      width: 'min(200px, 12vw)',
-                      height: 'min(200px, 12vh)',
-                    }}
-                  >
-                    <StickerPeel
-                      imageSrc={sticker.src}
-                      width={200}
-                      rotate={sticker.rotate}
-                      peelBackHoverPct={30}
-                      peelBackActivePct={40}
-                      shadowIntensity={0.6}
-                      lightingIntensity={0.15}
-                      peelDirection={sticker.peelDirection}
-                      initialPosition="center"
-                    />
-                  </div>
-                ))}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-6xl mx-auto">
+                  {[
+                    { name: "RAIT ACM", src: "/chapter/logo.png" },
+                    { name: "KJSCE ACM", src: "/chapter/kjsce.png" },
+                    { name: "BVP ACM", src: "/chapter/bvpacm.png" },
+                    { name: "PCCOE ACM", src: "/chapter/amc-pccoe-logo.png" },
+                    { name: "SNDT ACM", src: "/chapter/sndt.png" },
+                    { name: "MPSTME ACM", src: "/chapter/mpstme.svg" },
+                    { name: "VESIT ACM", src: "/chapter/1.png" },
+                    { name: "TSEC ACM", src: "/chapter/2.png" },
+                  ].map((chapter, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="group relative aspect-square"
+                    >
+                      <div className="absolute inset-0 bg-white/40 backdrop-blur-md rounded-2xl border border-gold-medium/10 transition-all duration-300 group-hover:border-gold-medium/40 group-hover:bg-white/60 shadow-lg shadow-gold-dark/5" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
+                        <div className="relative w-full flex-1 flex items-center justify-center">
+                          <Image
+                            src={chapter.src}
+                            alt={chapter.name}
+                            width={120}
+                            height={120}
+                            className="object-contain w-auto h-auto max-w-full max-h-full filter grayscale opacity-70 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110"
+                          />
+                        </div>
+                        <span className="text-gold-dark font-antonio text-lg tracking-widest opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center">
+                          {chapter.name}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </section>
 
