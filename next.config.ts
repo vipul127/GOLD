@@ -5,6 +5,8 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   output: 'export',
+  basePath: '/gold',
+  trailingSlash: true,
   images: {
     unoptimized: true,
     remotePatterns: [

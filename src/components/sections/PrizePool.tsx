@@ -1,311 +1,291 @@
 "use client";
 
-import { useRef, useMemo, useState, useEffect } from "react";
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Environment, useGLTF, MeshTransmissionMaterial, ContactShadows, useEnvironment, useAnimations } from "@react-three/drei";
-import { Physics, RigidBody, RapierRigidBody, CuboidCollider } from "@react-three/rapier";
-import { motion, useInView } from "framer-motion";
-import * as THREE from "three";
+import { useRef, useState, useEffect } from "react";
+import { motion, useMotionValue, AnimatePresence } from "framer-motion";
+import SlotCounter from "../ui/SlotCounter";
+import SplitText from "../ui/SplitText";
 
 // --- CONFIGURATION ---
-const PIGGY_BANK_SCALE: [number, number, number] = [0.18, 0.18, 0.18];
-const PIGGY_BANK_POSITION: [number, number, number] = [0, 3, 0];
-const CAMERA_POSITION: [number, number, number] = [24, -4, 24]; // Zoomed In
-
-// --- CAMERA RIG COMPONENT ---
-function CameraRig() {
-    const { camera } = useThree();
-
-    useEffect(() => {
-        camera.position.set(...CAMERA_POSITION);
-        camera.lookAt(0, 0, 0);
-    }, [camera]);
-
-    return null;
-}
-
-// --- PIGGY BANK COMPONENT (Visual - Animation) ---
-function PiggyBank() {
-    const { scene } = useGLTF("/piggy/glass.glb");
-    const groupRef = useRef<THREE.Group>(null);
-    const time = useRef(0);
-
-    // Find the main mesh for geometry reuse if complex mesh logic is needed, 
-    // but applying material to primitive works too if scene structure is simple.
-    // Actually, sticking to the mesh extraction logic ensures we target the right geometry.
-    const pigMesh = useMemo<THREE.Mesh | null>(() => {
-        let mesh: THREE.Mesh | null = null;
-        scene.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh && !mesh) mesh = child as THREE.Mesh;
-        });
-        return mesh;
-    }, [scene]);
-
-    // Animate Entrance (No Physics Engine Needed)
-    useFrame((state, delta) => {
-        if (!groupRef.current) return;
-        time.current += delta;
-
-        const targetY = PIGGY_BANK_POSITION[1]; // 2.5
-        const startY = 10;
-        let currentY = targetY;
-
-        // Entrance: Drop from 10 to 2.5 over 2.5 seconds
-        if (time.current < 2.5) {
-            const t = Math.min(time.current / 2.5, 1);
-            const ease = 1 - Math.pow(1 - t, 3); // Cubic ease out
-            currentY = startY - (startY - targetY) * ease;
-        } else {
-            currentY = targetY;
-        }
-
-        groupRef.current.position.set(PIGGY_BANK_POSITION[0], currentY, PIGGY_BANK_POSITION[2]);
-    });
-
-    if (!pigMesh) return null;
-
-    return (
-        <group ref={groupRef} position={[0, 10, 0]}>
-            <mesh
-                geometry={pigMesh.geometry}
-                scale={PIGGY_BANK_SCALE}
-                rotation={pigMesh.rotation}
-                position={pigMesh.position}
-            >
-                <MeshTransmissionMaterial
-                    backside
-                    backsideThickness={0.9}
-                    thickness={0.2}
-                    chromaticAberration={0}
-                    anisotropy={0}
-                    distortion={0}
-                    distortionScale={0}
-                    temporalDistortion={0.0}
-                    iridescence={0}
-                    iridescenceIOR={0.5}
-                    iridescenceThicknessRange={[0, 0]}
-                    clearcoat={0}
-                    attenuationDistance={0.5}
-                    attenuationColor="#FFC000"
-                    color="#FFD700"
-                    roughness={0}
-                    ior={1.4}
-                    transmission={1}
-                    resolution={640}
-                    samples={2}
-                    envMapIntensity={0}
-                />
-            </mesh>
-        </group>
-    );
-}
-
-// --- BAKED SCENE (PIG + BARS) ---
-function BakedScene() {
-    // Load the manually baked file (contains Pig + 151 Bars)
-    const { nodes, animations } = useGLTF("/piggy/bake1.glb");
-    const group = useRef<THREE.Group>(null);
-    const { actions } = useAnimations(animations, group);
-
-    // Play Animations
-    useEffect(() => {
-        // PLAY IMMEDIATELY (0.5s delay)
-        const timer = setTimeout(() => {
-            Object.values(actions).forEach((action) => {
-                if (action) {
-                    action.reset().play();
-                    action.setLoop(THREE.LoopOnce, 1);
-                    action.clampWhenFinished = true;
-                }
-            });
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [actions]);
-
-    // Use gold material for bars
-    const goldMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-        color: "#FFD700",
-        metalness: 1,
-        roughness: 0.1,
-        envMapIntensity: 2,
-        emissive: "#FFD700",
-        emissiveIntensity: 0.2
-    }), []);
-
-    return (
-        <group ref={group} dispose={null}>
-            {Object.values(nodes).map((node: any) => {
-                if (!node.isMesh) return null;
-
-                // Identify parts by name
-                const isPig = node.name.toLowerCase().includes("pig") || node.name.toLowerCase().includes("cylinder");
-                const isFunnel = node.name.toLowerCase().includes("funnel");
-
-                if (isFunnel) return null; // Hide funnel
-
-                if (isPig) {
-                    // Render Pig with High Quality Glass Material
-                    return (
-                        <mesh
-                            key={node.uuid}
-                            name={node.name}
-                            geometry={node.geometry}
-                            position={node.position}
-                            rotation={node.rotation}
-                            scale={node.scale}
-                            castShadow
-                            receiveShadow
-                        >
-                            <MeshTransmissionMaterial
-                                backside
-                                backsideThickness={0}
-                                thickness={0.005}
-                                chromaticAberration={0.02}
-                                anisotropy={0}
-                                distortion={0}
-                                distortionScale={0}
-                                temporalDistortion={0.0}
-                                iridescence={0}
-                                iridescenceIOR={1}
-                                iridescenceThicknessRange={[0, 0]}
-                                clearcoat={0}
-                                attenuationDistance={0.5}
-                                attenuationColor="#ead628ff"
-                                color="#eccf27ff"
-                                roughness={0.05}
-                                ior={1.2}
-                                transmission={1}
-                                resolution={512}
-                                samples={4}
-                                envMapIntensity={2}
-                            />
-                        </mesh>
-                    );
-                }
-
-                // Render Gold Bars
-                return (
-                    <mesh
-                        key={node.uuid}
-                        name={node.name}
-                        geometry={node.geometry}
-                        material={goldMaterial}
-                        position={node.position}
-                        rotation={node.rotation}
-                        scale={node.scale}
-                        castShadow
-                        receiveShadow
-                    />
-                );
-            })}
-        </group>
-    );
-}
-
-// --- SCENE COMPONENT ---
-function Scene({ isInView }: { isInView: boolean }) {
-    return (
-        <>
-            <CameraRig />
-            <Environment files="/ferndale_studio_01_4k.exr" />
-
-            {/* Lights */}
-            <spotLight position={[10, 20, 10]} angle={0.15} penumbra={1} intensity={0.5} castShadow />
-            <pointLight position={[-10, 10, -10]} intensity={1.5} color="#FFD700" />
-
-            {/* Top Down Spotlights */}
-            <spotLight position={[0, 40, 0]} angle={0.3} penumbra={1} intensity={60} color="#FFD700" castShadow distance={100} decay={2} />
-            <spotLight position={[5, 40, 5]} angle={0.4} penumbra={0.5} intensity={30} color="#FFD700" distance={100} decay={2} />
-            <spotLight position={[-5, 40, -5]} angle={0.4} penumbra={0.5} intensity={30} color="#FFD700" distance={100} decay={2} />
-
-            {/* NEW: Dedicated Pig Highlight (Top Rim) */}
-            <spotLight
-                position={[0, 10, 0]}
-                angle={0.4}
-                penumbra={0.5}
-                intensity={100}
-                color="#FFFFFF"
-                distance={30}
-                decay={2}
-            />
-
-            {/* NEW: Back Rim Light (Silhouette) */}
-            <spotLight
-                position={[0, 5, -10]}
-                angle={0.6}
-                penumbra={1}
-                intensity={80}
-                color="#404040"
-                distance={30}
-                decay={2}
-            />
-
-            {/* Interior Light */}
-            <pointLight
-                position={[PIGGY_BANK_POSITION[0], PIGGY_BANK_POSITION[1] + 2, PIGGY_BANK_POSITION[2]]}
-                intensity={20}
-                distance={15}
-                decay={2}
-                color="#FFD700"
-            />
-
-            {/* Bottom Uplights */}
-            <pointLight position={[-5, 0, 5]} intensity={5} distance={10} decay={2} color="#FFD700" />
-            <pointLight position={[5, 0, 5]} intensity={5} distance={10} decay={2} color="#FFD700" />
-            <pointLight position={[0, 0, -5]} intensity={5} distance={10} decay={2} color="#FFD700" />
-
-            {/* RENDER LOGIC:
-                Everything is now in BakedScene (Pig + Bars)
-            */}
-            {isInView && <BakedScene />}
-
-            <ContactShadows position={[0, -10, 0]} opacity={0.4} scale={40} blur={2.5} far={10} />
-        </>
-    );
-}
-
-// Preload assets
-useGLTF.preload("/piggy/glass.glb");
-useGLTF.preload("/piggy/bake1.glb");
+const VIDEO_DURATION = 27; // seconds
+const COUNTER_TARGET = 30000;
+const STAGE_DURATION = 2500; // 2.5s per text stage
 
 export default function PrizePool() {
-    const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { amount: 0.1, once: true });
+    const sectionRef = useRef<HTMLElement>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [isEnded, setIsEnded] = useState(false);
+    const [revealStage, setRevealStage] = useState(0);
+    const [videoLoaded, setVideoLoaded] = useState(false);
+    const [interactionRequired, setInteractionRequired] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(VIDEO_DURATION);
+    const [lastFrameSrc, setLastFrameSrc] = useState<string | null>(null); // canvas snapshot of last frame
+
+    const counterValue = useMotionValue(0);
+
+    // Sequence Controller
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting && revealStage === 0) {
+                    setRevealStage(1); // Start sequence
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [revealStage]);
+
+    // Stage Timer
+    useEffect(() => {
+        if (revealStage >= 1 && revealStage < 4) {
+            const timer = setTimeout(() => {
+                // Next Stage
+                if (revealStage < 3) {
+                    setRevealStage(prev => prev + 1);
+                } else {
+                    // At stage 3 ("Wait for it..."), allow transition to 4 (Playing) ONLY if video loaded
+                    if (videoLoaded) {
+                        attemptPlay();
+                    }
+                }
+            }, STAGE_DURATION);
+            return () => clearTimeout(timer);
+        } else if (revealStage === 3 && videoLoaded) {
+            // If we were waiting at stage 3 and video finally loads
+            const timer = setTimeout(() => attemptPlay(), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [revealStage, videoLoaded]);
+
+    const attemptPlay = () => {
+        // Play video (with its own synced audio) imperatively
+        if (videoRef.current) {
+            videoRef.current.play()
+                .then(() => {
+                    setRevealStage(4);
+                    setIsPlaying(true);
+                    setInteractionRequired(false);
+                })
+                .catch(() => {
+                    setRevealStage(4);
+                    setInteractionRequired(true); // Autoplay blocked — show tap-to-play overlay
+                });
+        } else {
+            setRevealStage(4);
+            setIsPlaying(true);
+        }
+    };
+
+    const manualStart = () => {
+        if (videoRef.current) {
+            videoRef.current.play().then(() => {
+                setIsPlaying(true);
+                setInteractionRequired(false);
+            });
+        }
+    };
+
+    // Sync Logic (same as before)
+    useEffect(() => {
+        if (!isPlaying) return;
+
+        let startTime = Date.now();
+        let animationFrame: number;
+
+        const tick = () => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const remaining = Math.max(0, VIDEO_DURATION - elapsed);
+
+            setTimeLeft(remaining);
+
+            const COUNT_END = 25;      // reach 30k at second 25
+            const DEAD_ZONE = 6;       // flat / near-zero for first 6s
+
+            if (elapsed >= COUNT_END) {
+                counterValue.set(COUNTER_TARGET);
+            } else if (elapsed < DEAD_ZONE) {
+                // Crawl: 0 → 100 in dead zone (doubled speed vs before)
+                counterValue.set(Math.floor((elapsed / DEAD_ZONE) * 100));
+            } else {
+                // Map seconds 6→25 onto 0→1, exponential ease-in (power-8 = softer than 10)
+                const t = (elapsed - DEAD_ZONE) / (COUNT_END - DEAD_ZONE);
+                const eased = Math.pow(2, 8 * t - 8); // less steep than before
+                counterValue.set(Math.floor(eased * COUNTER_TARGET));
+            }
+
+            if (elapsed < VIDEO_DURATION) {
+                animationFrame = requestAnimationFrame(tick);
+            } else {
+                setIsEnded(true);
+                const nextSection = document.getElementById("timeline");
+                if (nextSection) {
+                    nextSection.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        };
+
+        animationFrame = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [isPlaying, counterValue]);
+
+    // Imperatively play the video when isPlaying becomes true
+    useEffect(() => {
+        if (isPlaying && videoRef.current) {
+            videoRef.current.play().catch(() => {
+                // autoplay blocked — already handled by interactionRequired state
+            });
+        }
+    }, [isPlaying]);
+
+    // Re-seek to last frame whenever section is revisited after ending
+    // (browsers can GC video frames when section scrolls offscreen)
+    useEffect(() => {
+        if (!isEnded || !videoRef.current) return;
+        const video = videoRef.current;
+        const freeze = () => {
+            if (video.duration) {
+                video.currentTime = video.duration - 0.01;
+                video.pause();
+            }
+        };
+        // Freeze now
+        freeze();
+        // Also freeze whenever the video might re-buffer
+        video.addEventListener("seeked", freeze);
+        return () => video.removeEventListener("seeked", freeze);
+    }, [isEnded]);
+
 
     return (
         <section
             id="prize-pool"
             ref={sectionRef}
-            className="snap-section bg-black text-white relative h-screen w-full overflow-hidden flex items-center justify-center"
+            className="snap-section bg-black text-white relative h-screen w-full overflow-hidden flex items-center justify-center font-antonio select-none"
         >
-            <div className="absolute inset-0 z-0">
-                {isInView && (
-                    <Canvas shadows camera={{ position: CAMERA_POSITION, fov: 20 }} dpr={[1, 1.5]}>
-                        <Scene isInView={isInView} />
-                        <color attach="background" args={['#050505']} />
-                        <fog attach="fog" args={['#050505', 100, 400]} />
-                    </Canvas>
+            {/* Prize Pool Video — always mounted for preloading, visible when playing */}
+            <div className="absolute inset-0 bg-black">
+                <motion.div
+                    animate={{ opacity: (isPlaying || isEnded) ? 1 : 0 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    className="absolute inset-0 flex justify-center items-start"
+                >
+                    <video
+                        ref={videoRef}
+                        playsInline
+                        preload="auto"
+                        onCanPlayThrough={() => setVideoLoaded(true)}
+                        onEnded={() => {
+                            // Show static last frame image (public/last.png)
+                            setLastFrameSrc("https://res.cloudinary.com/dojuhlxvc/image/upload/v1771500126/last_qybu4e.png");
+                            if (videoRef.current) videoRef.current.pause();
+                        }}
+                        className="w-[80%] h-auto object-contain"
+                        style={{ marginTop: 0 }}
+                    >
+                        <source src="https://res.cloudinary.com/dft3midee/video/upload/v1771496840/prizepool_sqaduq.mov" type="video/mp4" />
+                    </video>
+                    <div className="absolute inset-0 bg-black/30" />
+                    {/* Static last-frame image — shown after video ends, survives browser GC */}
+                    {isEnded && lastFrameSrc && (
+                        <img
+                            src={lastFrameSrc}
+                            alt=""
+                            className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                            style={{ marginTop: 0 }}
+                        />
+                    )}
+                </motion.div>
+
+                {interactionRequired && (
+                    <div
+                        onClick={manualStart}
+                        className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 cursor-pointer animate-pulse"
+                    >
+                        <span className="text-8xl md:text-6xl text-gold-medium uppercase tracking-widest font-bold">
+                            Click to Reveal
+                        </span>
+                    </div>
                 )}
             </div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] pointer-events-none z-10 opacity-30" />
-            <div className="absolute bottom-10 left-5 text-left z-20 pointer-events-none">
-                <div className="text-white/80 text-2xl tracking-widest uppercase font-light">
-                    Total Cash Prize Pool
-                </div>
-                <motion.h2
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-[12vw] leading-none font-black font-antonio text-gold-fresh tracking-tighter drop-shadow-2xl"
-                    style={{
-                        textShadow: "0 0 40px rgba(255, 215, 0, 0.6)",
-                    }}
+
+            {/* Text Reveal Sequence */}
+            <AnimatePresence mode="wait">
+                {revealStage === 1 && (
+                    <motion.div key="text1" exit={{ opacity: 0, filter: "blur(10px)", scale: 1.1 }} transition={{ duration: 0.5 }} className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none p-10">
+                        <SplitText
+                            text="NOT ONLY THAT..."
+                            className="text-6xl md:text-9xl font-black uppercase text-white tracking-tighter text-center max-w-5xl leading-none"
+                            delay={0.2}
+                        />
+                    </motion.div>
+                )}
+                {revealStage === 2 && (
+                    <motion.div key="text2" exit={{ opacity: 0, filter: "blur(10px)", scale: 1.1 }} transition={{ duration: 0.5 }} className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none p-10">
+                        <SplitText
+                            text="WE HAVE A PRIZE POOL AS WELL"
+                            className="text-5xl md:text-8xl font-black uppercase text-gold-fresh tracking-tighter text-center max-w-6xl leading-none"
+                            delay={0}
+                        />
+                    </motion.div>
+                )}
+                {revealStage === 3 && (
+                    <motion.div
+                        key="text3"
+                        exit={{ opacity: 0, scale: 2, filter: "blur(20px)" }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none p-10"
+                    >
+                        <SplitText
+                            text="WAIT FOR IT..."
+                            className="text-6xl md:text-9xl font-black uppercase text-white tracking-widest text-center"
+                            delay={0}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Slot Machine Counter (Bottom-Left) */}
+            {isPlaying && (
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="absolute bottom-10 left-10 z-20"
                 >
-                    Rs 30,000
-                </motion.h2>
-            </div>
+                    <div className="flex flex-col items-start gap-0">
+                        <span className="text-white text-lg md:text-xl uppercase tracking-[0.2em] font-medium font-antonio mb-2 pl-1">
+                            Total Cash Prize
+                        </span>
+                        <div className="text-[12vw] leading-none font-black text-gold-fresh drop-shadow-[0_0_50px_rgba(255,215,0,0.4)] flex items-baseline">
+                            <span className="text-[8vw] mr-2">₹</span>
+                            <SlotCounter value={counterValue} />
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Final Countdown Overlay (Bottom-Right) */}
+            {timeLeft <= 4 && timeLeft > 0 && isPlaying && (
+                <div className="absolute bottom-10 right-10 z-50 pointer-events-none">
+                    <motion.span
+                        key={Math.floor(timeLeft)}
+                        initial={{ scale: 1.5, opacity: 0, rotate: -10 }}
+                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        className="block text-[25vw] leading-none py font-black text-white mix-blend-overlay opacity-50"
+                    >
+                        {Math.ceil(timeLeft)}
+                    </motion.span>
+                </div>
+            )}
+
         </section>
     );
 }

@@ -20,12 +20,14 @@ import MobileExperience from "@/components/MobileExperience";
 import Sponsors from "@/components/sections/Sponsors";
 import PrizePool from "@/components/sections/PrizePool";
 import Timeline from "@/components/sections/Timeline";
+import AboutEvent from "@/components/sections/AboutEvent";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SECTIONS = [
   { id: "home", title: "GOLD", theme: "offwhite" },
   { id: "about-us", title: "ABOUT US", theme: "black" },
+  { id: "sequence", title: "SEQUENCE", theme: "offwhite" },
   { id: "about-event", title: "ABOUT EVENT", theme: "offwhite" },
   { id: "prize-pool", title: "PRIZE POOL", theme: "black" },
   { id: "timeline", title: "TIMELINE", theme: "offwhite" },
@@ -33,6 +35,7 @@ const SECTIONS = [
   { id: "team", title: "TEAM", theme: "offwhite" },
   { id: "sponsors", title: "SPONSORS", theme: "black" },
   { id: "chapters", title: "CHAPTERS", theme: "offwhite" },
+  { id: "register", title: "REGISTER", theme: "black" },
 ];
 
 
@@ -81,11 +84,11 @@ function LazyFooter() {
               <div className="flex gap-20 pointer-events-auto">
                 <div>
                   <p className="text-xs font-black text-gold-fresh uppercase tracking-[0.6em] mb-6 opacity-60">Contact</p>
-                  <p className="text-3xl font-bold tracking-tight text-white select-text">hello@acmgold.in</p>
+                  <p className="text-3xl font-bold tracking-tight text-white select-text">reachraitacm@gmail.com</p>
                 </div>
                 <div>
                   <p className="text-xs font-black text-gold-fresh uppercase tracking-[0.6em] mb-6 opacity-60">Location</p>
-                  <p className="text-3xl font-bold tracking-tight text-white">Mumbai, India</p>
+                  <p className="text-3xl font-bold tracking-tight text-white">Navi Mumbai, India</p>
                 </div>
               </div>
             </div>
@@ -104,10 +107,18 @@ function LazyFooter() {
               </nav>
 
               <div className="flex gap-8 relative z-20">
-                <Linkedin className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                <Instagram className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                <Twitter className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
-                <Mail className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                <a href="https://www.linkedin.com/company/rait-acm-student-chapter/" target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                </a>
+                <a href="https://www.instagram.com/rait.acm/" target="_blank" rel="noopener noreferrer">
+                  <Instagram className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                </a>
+                <a href="https://www.facebook.com/raitacm" target="_blank" rel="noopener noreferrer">
+                  <Twitter className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                </a>
+                <a href="mailto:reachraitacm@gmail.com">
+                  <Mail className="w-8 h-8 text-white/40 hover:text-gold-fresh cursor-pointer transition-colors" />
+                </a>
               </div>
             </div>
           </div>
@@ -121,6 +132,7 @@ function LazyLanyard() {
   const ref = useRef(null);
   const isInView = useInView(ref, { margin: "200px 0px" });
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const checkScreen = () => setIsSmallScreen(window.innerWidth < 1500);
@@ -131,7 +143,31 @@ function LazyLanyard() {
 
   return (
     <div ref={ref} className="w-full h-[100vh] absolute bottom-[5vh] z-10 pointer-events-auto flex justify-center items-end">
-      {isInView && <Lanyard position={[0, 0, isSmallScreen ? 19 : 15]} gravity={[0, -40, 0]} transparent={true} />}
+      {/* Loading Overlay - Ghost Text */}
+      <AnimatePresence>
+        {!isLoaded && isInView && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
+          >
+            <h3 className="text-4xl md:text-6xl font-black text-white/10 uppercase tracking-[0.5em] animate-pulse font-antonio select-none">
+              Loading Team...
+            </h3>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {isInView && (
+        <Lanyard
+          position={[0, 0, isSmallScreen ? 19 : 15]}
+          gravity={[0, -40, 0]}
+          transparent={true}
+          onLoaded={() => setIsLoaded(true)}
+        />
+      )}
     </div>
   );
 }
@@ -149,7 +185,14 @@ export default function Home() {
   // Detect viewport size
   useEffect(() => {
     const checkViewport = () => {
-      setIsDesktop(window.innerWidth >= 1280);
+      // Check for desktop: Wide screen AND fine pointer (mouse/trackpad)
+      // This forces mobile view on:
+      // 1. Small screens (< 1280px)
+      // 2. Touch devices (Phones/Tablets) even if they have large screens or use "Desktop Mode"
+      const isWide = window.innerWidth >= 1280;
+      const isFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+      setIsDesktop(isWide && isFinePointer);
       setViewportChecked(true);
     };
 
@@ -335,18 +378,19 @@ export default function Home() {
                   >
                     <div className="h-[2px] w-20 bg-gold-fresh mb-8" />
                     <p className="text-lg md:text-2xl font-light leading-relaxed text-white/80">
-                      A collaborative ecosystem of ACM chapters across India,
-                      uniting the brightest minds to <span className="text-gold-fresh font-bold">innovate</span>,
-                      <span className="text-gold-fresh font-bold"> collaborate</span>, and shape the future.
+                      RAIT ACM is a premier technical chapter known for organizing top-tier flagship events like <span className="text-gold-fresh font-bold">CodeSummit</span>, India's Biggest National Coding Competition, and <span className="text-gold-fresh font-bold">KLEOS</span>, a National-Level Hackathon. Beyond events, we are a community where students network, learn, and innovate.
                     </p>
                   </motion.div>
+
+                  {/* RAIT ACM Logo + "Brought to you by" - Top Right of Content Area */}
+
 
                   {/* Stats Grid */}
                   <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10 max-w-lg">
                     {[
-                      { value: "15+", label: "Chapters" },
-                      { value: "500+", label: "Members" },
-                      { value: "50+", label: "Events" }
+                      { value: "3", label: "Chapters" },
+                      { value: "20+", label: "Members" },
+                      { value: "10+", label: "Events" }
                     ].map((stat, i) => (
                       <motion.div
                         key={i}
@@ -379,61 +423,35 @@ export default function Home() {
                   priority
                 />
               </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.4 }}
+                className="absolute top-12 right-12 md:top-20 w-full md:w-auto md:right-20 pointer-events-none z-30 flex flex-col items-end gap-2"
+              >
+                <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-medium">Brought to you by</span>
+                <div className="relative w-32 h-12 md:w-40 md:h-16">
+                  <Image
+                    src="https://rait.acm.org/codesummit/ACMWhite.png"
+                    alt="RAIT ACM"
+                    fill
+                    className="object-contain object-right"
+                  />
+                </div>
+              </motion.div>
 
             </section>
 
             {/* SEQUENCE Section - GoldScroller Component */}
-            <GoldScroller id="sequence" />
+            <GoldScroller />
 
             {/* About Event Section */}
-            <section id="about-event" className="snap-section bg-black">
-              <div className="w-full px-20 mt-20">
-                <div className="flex justify-between items-end mb-14">
-                  <div>
-                    <h2 className="text-8xl font-black uppercase tracking-tighter leading-none font-antonio text-offwhite">THE EVENT</h2>
-                  </div>
-                  <p className="text-offwhite/40 font-bold uppercase tracking-widest text-xs max-w-[300px] leading-relaxed">
-                    GOLD 2026 is a pioneering initiative fostering collaboration among ACM India chapters to inspire and empower attendees!
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-20">
-                  <div className="group cursor-pointer">
-                    <div className="aspect-[4/3] bg-zinc-900 mb-10 overflow-hidden rounded-3xl relative">
-                      <div className="absolute inset-0 bg-gold-fresh/5 group-hover:bg-transparent transition-all duration-700" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[10rem] font-black text-offwhite/5 select-none font-antonio">01</span>
-                      </div>
-                      <div className="absolute bottom-6 left-6 right-6">
-                        <p className="text-white/60 text-sm font-medium leading-relaxed">
-                          30-minute talks, sharing insights across fields. Aim to inspire attendees and foster collaboration among ACM India chapters.
-                        </p>
-                      </div>
-                    </div>
-                    <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Speaker Session</h3>
-                  </div>
-
-                  <div className="group cursor-pointer mt-20">
-                    <div className="aspect-[4/3] bg-zinc-900 mb-10 overflow-hidden rounded-3xl relative">
-                      <div className="absolute inset-0 bg-gold-fresh/5 group-hover:bg-transparent transition-all duration-700" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[10rem] font-black text-offwhite/5 select-none font-antonio">02</span>
-                      </div>
-                      <div className="absolute bottom-6 left-6 right-6">
-                        <p className="text-white/60 text-sm font-medium leading-relaxed">
-                          Rebuild a website's frontend using HTML, CSS, and JS without viewing its source code. analyze the design to implement the underlying code.
-                        </p>
-                      </div>
-                    </div>
-                    <h3 className="text-4xl font-black mb-6 uppercase tracking-tight text-offwhite">Reverse Coding</h3>
-                  </div>
-                </div>
-              </div>
-            </section>
-            {/* Timeline Section */}
-            <Timeline />
+            <AboutEvent />
             {/* Prize Pool Section */}
             <PrizePool />
+            {/* Timeline Section */}
+            <Timeline />
 
 
 
@@ -482,17 +500,17 @@ export default function Home() {
                     ))}
                   </motion.h2>
                   <p className="text-3xl -mt-15 font-black text-black/40 uppercase tracking-[0.3em]">
-                    Faculty Coordinator
+                    Faculty Sponsor
                   </p>
                 </div>
               </div>
               {/* https://res.cloudinary.com/dft3midee/image/upload/v1770708847/res2_obr6lz.png */}
               {/* https://res.cloudinary.com/dft3midee/image/upload/v1770708861/base_nzzyjm.png colored*/}
-              <div className="absolute -bottom-20 -right-10 w-[55%] h-[85%] pointer-events-none">
+              <div className="absolute -bottom-20 -right-10 w-[55%] h-[65%] pointer-events-none">
                 <div className="relative w-full h-full">
                   <Image
                     src="https://res.cloudinary.com/dft3midee/image/upload/v1770708861/base_nzzyjm.png"
-                    alt="Faculty Coordinator"
+                    alt="Faculty Sponsor"
                     fill
                     className="object-contain object-bottom object-right"
                     style={{
@@ -550,14 +568,14 @@ export default function Home() {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-6xl mx-auto">
                   {[
-                    { name: "RAIT ACM", src: "/chapter/logo.png" },
-                    { name: "KJSCE ACM", src: "/chapter/kjsce.png" },
-                    { name: "BVP ACM", src: "/chapter/bvpacm.png" },
-                    { name: "PCCOE ACM", src: "/chapter/amc-pccoe-logo.png" },
-                    { name: "SNDT ACM", src: "/chapter/sndt.png" },
-                    { name: "MPSTME ACM", src: "/chapter/mpstme.svg" },
-                    { name: "VESIT ACM", src: "/chapter/1.png" },
-                    { name: "TSEC ACM", src: "/chapter/2.png" },
+                    { name: "RAIT ACM", src: "/gold/chapter/logo.png" },
+                    { name: "KJSCE ACM", src: "/gold/chapter/kjsce.png" },
+                    { name: "BVP ACM", src: "/gold/chapter/bvpacm.png" },
+                    { name: "PCCOE ACM", src: "/gold/chapter/amc-pccoe-logo.png" },
+                    { name: "SNDT ACM", src: "/gold/chapter/sndt.png" },
+                    { name: "MPSTME ACM", src: "/gold/chapter/mpstme.svg" },
+                    { name: "VESIT ACM", src: "/gold/chapter/1.png" },
+                    { name: "TSEC ACM", src: "/gold/chapter/2.png" },
                   ].map((chapter, index) => (
                     <motion.div
                       key={index}
@@ -591,7 +609,7 @@ export default function Home() {
 
 
             {/* Registration Section */}
-            <section className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
+            <section id="register" className="snap-section relative min-h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
               {/* Video Background - Plays once, then fades down */}
               <motion.video
                 ref={(el) => {
@@ -671,34 +689,35 @@ export default function Home() {
                       initial={{ opacity: 0, y: 30, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{
-                        duration: 0.8,
                         delay: 0.8,
                         ease: [0.16, 1, 0.3, 1]
                       }}
                     >
-                      <GlassSurface
-                        width={280}
-                        height={85}
-                        borderRadius={999}
-                        displace={0.1}
-                        distortionScale={0.5}
-                        brightness={1.2}
-                        opacity={1}
-                        blur={0}
-                        className="bg-gold"
-                      >
-                        <button className="w-full h-full flex items-center justify-center gap-4 text-gold-medium font-bold tracking-[0.2em] uppercase text-lg hover:text-gold-light hover:scale-105 transition-all duration-300 group px-8">
-                          Join Now
-                          <motion.span
-                            className="inline-block text-2xl"
-                            initial={{ x: 0 }}
-                            whileHover={{ x: 5 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                          >
-                            →
-                          </motion.span>
-                        </button>
-                      </GlassSurface>
+                      <a href="https://forms.gle/qg4Bv5gHgxg1UW999" target="_blank" rel="noopener noreferrer">
+                        <GlassSurface
+                          width={280}
+                          height={85}
+                          borderRadius={999}
+                          displace={0.1}
+                          distortionScale={0.5}
+                          brightness={1.2}
+                          opacity={1}
+                          blur={0}
+                          className="bg-gold"
+                        >
+                          <button className="w-full h-full flex items-center justify-center gap-4 text-gold-medium font-bold tracking-[0.2em] uppercase text-lg hover:text-gold-light hover:scale-105 transition-all duration-300 group px-8">
+                            Join Now
+                            <motion.span
+                              className="inline-block text-2xl"
+                              initial={{ x: 0 }}
+                              whileHover={{ x: 5 }}
+                              transition={{ duration: 0.2, ease: "easeOut" }}
+                            >
+                              →
+                            </motion.span>
+                          </button>
+                        </GlassSurface>
+                      </a>
                     </motion.div>
                   </div>
                 </div>

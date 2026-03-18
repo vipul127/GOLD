@@ -2,7 +2,7 @@
 'use client';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Canvas, extend, useFrame } from '@react-three/fiber';
-import { useGLTF, useTexture, Environment, Lightformer, Decal } from '@react-three/drei';
+import { Environment, Lightformer, ContactShadows, useGLTF, useTexture, useProgress, Decal } from '@react-three/drei';
 import {
     BallCollider,
     CuboidCollider,
@@ -50,22 +50,35 @@ const CARD_TEXTURES = [
     'https://res.cloudinary.com/dft3midee/image/upload/v1770887798/4_vyfywu.png',
     'https://res.cloudinary.com/dft3midee/image/upload/v1770887800/9_l8eljg.png',
     'https://res.cloudinary.com/dft3midee/image/upload/v1770887798/5_f6nnxs.png',
-    'https://res.cloudinary.com/dft3midee/image/upload/v1770887802/10_c861hx.png'
+    'https://res.cloudinary.com/dft3midee/image/upload/v1770887802/10_c861hx.png',
+    'https://res.cloudinary.com/dft3midee/image/upload/v1771484896/11_li8giw.png',
+
 ];
 
-const CARD_COUNT = 10;
+const CARD_COUNT = 11;
 const CARD_SPACING = 0.87;
 
 export default function Lanyard({
     position = [0, 0, 40],
     gravity = [0, -40, 0],
-    fov = 21,
-    transparent = false
-}: LanyardProps) {
+    fov = 24,
+    transparent = false,
+    onLoaded
+}: LanyardProps & { onLoaded?: () => void }) {
     const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth < 768);
     const [visibleCards, setVisibleCards] = useState<number>(0);
     const [isInView, setIsInView] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
+
+    // Track 3D loading progress
+    const { active, progress } = useProgress();
+
+    useEffect(() => {
+        // When active is false and progress is 100, everything is loaded
+        if (!active && progress === 100 && onLoaded) {
+            onLoaded();
+        }
+    }, [active, progress, onLoaded]);
 
     useEffect(() => {
         const handleResize = (): void => setIsMobile(window.innerWidth < 768);
@@ -227,8 +240,8 @@ function ShortBand({ isMobile = false, x = 0, z = 0, rotation = 0, userTexture }
     const j3 = useRef<any>(null);
     const j4 = useRef<any>(null);
 
-    const cardGLB = '/lanyard/card.glb';
-    const lanyardTexture = '/lanyard/lanyard.png';
+    const cardGLB = '/gold/lanyard/card.glb';
+    const lanyardTexture = '/gold/lanyard/lanyard.png';
     const { nodes, materials } = useGLTF(cardGLB) as any;
     const texture = useTexture(lanyardTexture);
 
@@ -330,8 +343,8 @@ function LongBand({ isMobile = false, x = 0, z = 0, rotation = 0, userTexture }:
     const j6 = useRef<any>(null);
     const j7 = useRef<any>(null);
 
-    const cardGLB = '/lanyard/card.glb';
-    const lanyardTexture = '/lanyard/lanyard.png';
+    const cardGLB = '/gold/lanyard/card.glb';
+    const lanyardTexture = '/gold/lanyard/lanyard.png';
     const { nodes, materials } = useGLTF(cardGLB) as any;
     const texture = useTexture(lanyardTexture);
 

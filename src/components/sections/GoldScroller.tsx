@@ -45,8 +45,7 @@ export default function GoldScroller({ isBackground = false, id }: GoldScrollerP
 
 
   return (
-    <section
-      id={id}
+    <section id="sequence"
       className={`${isBackground ? "absolute inset-0 z-0 opacity-20" : "snap-section bg-offwhite min-h-screen flex items-center justify-center"} overflow-hidden relative`}
     >
       <div
@@ -123,10 +122,10 @@ export default function GoldScroller({ isBackground = false, id }: GoldScrollerP
             </div>
 
             {/* LEADERS */}
-            <div className="overflow-hidden py-1 relative">
+            <div className="overflow-hidden p-2 relative">
               {/* Shadow Text for 3D effect */}
               <motion.h2
-                className="absolute top-1 left-1 text-[16vw] md:text-[12vw] font-black font-antonio tracking-tighter text-black/5 leading-none select-none z-0"
+                className="absolute top-1 left-1 text-[16vw] md:text-[18vw] font-black font-antonio tracking-tighter text-black/5 leading-none select-none z-0"
               >
                 LEADERS
               </motion.h2>

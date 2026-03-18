@@ -19,6 +19,10 @@ const antonio = Antonio({
 export const metadata: Metadata = {
   title: "GOLD | RAIT ACM",
   description: "The premier event for ACM chapters across India.",
+  icons: {
+    icon: "https://minecraft-max.net/upload/iblock/845/k0sm05x8mhzfvqwkqsqaxji4js9tpzvp.png",
+    shortcut: "https://minecraft-max.net/upload/iblock/845/k0sm05x8mhzfvqwkqsqaxji4js9tpzvp.png",
+  },
 };
 
 export default function RootLayout({
